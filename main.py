@@ -54,6 +54,11 @@ class BuildingEnvironment(Model):
         self.datacollector.collect(self)
         self.schedule.step()
 
+
+    def register_unavailable_charger_event(self):
+        self.unavailable_charger_events += 1
+
+
     def adjust_load_balancing(self):
         for breaker in self.breakers:
             # Find all chargers connected to this breaker
@@ -98,25 +103,41 @@ class ElectricVehicle(Agent):
         if self.charge_level < (self.battery_capacity - self.minimum_charge_needed):
             self.start_charging()
 
-    def start_charging(self):
-        available_charger = None
-        for charger in self.model.chargers:
-            if charger.availability:
-                available_charger = charger
-                break
+    # def start_charging(self):
+    #     available_charger = None
+    #     for charger in self.model.chargers:
+    #         if charger.availability:
+    #             available_charger = charger
+    #             break
+    #
+    #     if available_charger is not None:
+    #         available_charger.activate_charger(self)
+    #     else:
+    #         # Increment a counter in the model for unavailable chargers when needed
+    #         self.model.unavailable_charger_events += 1
 
-        if available_charger is not None:
+    def start_charging(self):
+        # Attempt to find and start charging with an available charger
+        available_charger = self.find_available_charger()
+        if available_charger:
             available_charger.activate_charger(self)
+            # Adjust charger logic to ensure it can accept and start charging an EV
         else:
-            # Increment a counter in the model for unavailable chargers when needed
-            self.model.unavailable_charger_events += 1
+            # Optionally, keep track of situations where an EV wants to charge but can't find an available charger
+            self.model.register_unavailable_charger_event()
 
     def stop_charging(self):
         self.charging_status = False
 
     def daily_use(self):
-        # Simulate daily consumption
-        consumption = self.daily_km * self.consumption_rate
+        # # Simulate daily consumption
+        # consumption = self.daily_km * self.consumption_rate
+        # self.charge_level -= consumption
+        # if self.charge_level < 0:
+        #     self.charge_level = 0
+
+        # Simulate daily consumption based on kilometers driven and efficiency
+        consumption = self.daily_km * 0.2  # Placeholder for consumption logic
         self.charge_level -= consumption
         if self.charge_level < 0:
             self.charge_level = 0
@@ -125,25 +146,36 @@ class ElectricVehicle(Agent):
         # Assume the vehicle needs charging if below 20% capacity
         return self.charge_level < 0.2 * self.battery_capacity
 
+    def find_available_charger(self):
+        for charger in self.model.chargers:
+            if charger.availability:
+                return charger
+        return None
+
 class EVCharger(Agent):
     def __init__(self, unique_id, model, charging_power, connected_breaker):
         super().__init__(unique_id, model)
         self.availability = True
-        self.initial_charging_power = charging_power
-        self.current_charging_power = charging_power  # This may change due to dynamic load balancing
-        self.connected_breaker = connected_breaker
+        self.charging_power = charging_power
         self.connected_ev = None
+        self.connected_breaker = connected_breaker
+
 
     def activate_charger(self, ev):
         if self.availability:
-            self.availability = False
             self.connected_ev = ev
-            self.model.adjust_load_balancing()
+            self.availability = False
+            self.adjust_output_amperage()
+            # Implement additional logic as needed for load balancing and starting the charge
 
     def deactivate_charger(self):
         self.availability = True
         self.connected_ev = None
         self.model.adjust_load_balancing()
+
+    def adjust_output_amperage(self):
+        # Implement dynamic load balancing here
+        pass
 
     def charge_ev(self):
         # Assuming a constant voltage of 240 volts for Level 2 charging
