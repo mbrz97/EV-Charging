@@ -20,9 +20,11 @@ class BuildingEnvironment(Model):
         self.breaker_capacity = [random.choice(choices) for _ in range(N_breakers)]
         self.num_agents = N_evs
         self.schedule = RandomActivation(self)
+
         # Initialize breakers
         self.breakers = [{'capacity': cap, 'chargers': []} for cap in self.breaker_capacity]
-        # Initialize chargers and assign them to breakers in a round-robin fashion
+
+        # Initialize chargers and assign them to breakers
         self.chargers = []
         for i in range(N_ev_chargers):
             selected_breaker_index = random.randint(0, N_breakers - 1)
@@ -31,12 +33,13 @@ class BuildingEnvironment(Model):
             # Add charger to the selected breaker's list
             self.breakers[selected_breaker_index]['chargers'].append(charger)
             self.schedule.add(charger)
+
         # Initialize EVs
         self.evs = [ElectricVehicle(i, self, random.uniform(50, 100)) for i in range(N_evs)]
         for ev in self.evs:
             self.schedule.add(ev)
 
-        self.unavailable_charger_events = 0  # Initialize counter
+        self.unavailable_charger_events = 0
         self.datacollector = DataCollector(
             model_reporters={
                 "Total Consumption": lambda m: sum([ev.power_consumed for ev in m.evs]),
@@ -45,35 +48,12 @@ class BuildingEnvironment(Model):
             }
         )
 
-        # self.datacollector = DataCollector(
-        #     model_reporters={
-        #         "Total Consumption": lambda m: sum([ev.charge_level for ev in m.evs]),
-        #         "Active Chargers": lambda m: sum([1 for c in m.chargers if not c.availability])
-        #     }
-        # )
-
     def step(self):
         self.datacollector.collect(self)
         self.schedule.step()
 
     def register_unavailable_charger_event(self):
         self.unavailable_charger_events += 1
-
-    # def adjust_load_balancing(self):
-    #     for breaker in self.breakers:
-    #         # Find all chargers connected to this breaker
-    #         connected_chargers = [c for c in self.chargers if c.connected_breaker == breaker and not c.availability]
-    #         if not connected_chargers:
-    #             continue
-    #         # Calculate available amperage for this breaker
-    #         # total_available_amperage = breaker['capacity'] - sum(c.current_charging_power for c in connected_chargers)
-    #         # if total_available_amperage < 0:
-    #         #     total_available_amperage = 0
-    #         # Evenly distribute available amperage among active chargers
-    #         if len(connected_chargers) > 0:
-    #             allocated_amperage = breaker['capacity'] / len(connected_chargers)
-    #             for charger in connected_chargers:
-    #                 charger.current_charging_power = allocated_amperage
 
     def adjust_charger_power(self):
         # Loop through each breaker
@@ -97,19 +77,7 @@ class ElectricVehicle(Agent):
         super().__init__(unique_id, model)
         self.power_consumed = 0
         self.battery_capacity = battery_capacity
-        # Assume a fixed consumption rate per km
-        # self.consumption_rate = 0.2  # kWh per km
         self.charging_status = False
-
-        # mean = 100
-        # std_dev = 40
-        # value = np.random.normal(mean, std_dev)
-        # while value < 0 or value > 100:
-        #     value = np.random.normal(mean, std_dev)
-        # variable = round(value)
-        #
-        # # Assuming efficiency of 5 km/kWh
-        # self.daily_km = variable / 5
 
         self.charge_level = random.uniform(0.2,
                                            1.0) * battery_capacity  # Initial charge level as a percentage of capacity
@@ -128,24 +96,14 @@ class ElectricVehicle(Agent):
             available_charger.activate_charger(self)
             self.charging_status = True
             self.power_consumed = self.battery_capacity - self.charge_level
-            # Adjust charger logic to ensure it can accept and start charging an EV
         else:
-            # Optionally, keep track of situations where an EV wants to charge but can't find an available charger
             self.model.register_unavailable_charger_event()
 
     def stop_charging(self):
         self.charging_status = False
 
-
     def daily_use(self):
         # Simulate daily consumption based on kilometers driven and efficiency
-
-        # mean = 60
-        # std_dev = 100
-        # value = np.random.normal(mean, std_dev)
-        # while value < 0 or value > mean:
-        #     value = np.random.normal(mean, std_dev)
-        # variable = round(value)
 
         variable = random.uniform(0, 100)
 
@@ -159,7 +117,7 @@ class ElectricVehicle(Agent):
 
     def needs_charging(self):
         # Assume the vehicle needs charging if below 80% capacity
-        return self.charge_level < 0.7*self.battery_capacity
+        return self.charge_level < 0.7 * self.battery_capacity
 
     def find_available_charger(self):
         for charger in self.model.chargers:
@@ -177,19 +135,15 @@ class EVCharger(Agent):
         self.current_charging_power = charging_power  # Current charging power, to be adjusted
         self.connected_breaker_index = connected_breaker  # Store index of connected breaker
 
-
     def activate_charger(self, ev):
         if self.availability:
             self.availability = False
             self.connected_ev = ev
             self.model.adjust_charger_power()
-            # self.adjust_output_amperage()
-            # Implement additional logic as needed for load balancing and starting the charge
 
     def adjust_charging_power(self, new_power):
         # Adjust the charger's current charging power
         self.current_charging_power = new_power
-
 
     def deactivate_charger(self):
         if self.connected_ev:
@@ -264,8 +218,6 @@ def run_simulation():
 
     server.port = 8520  # The default
     server.launch()
-
-    # Visualization setup here (e.g., using ChartModule for daily consumption and bottleneck visualization)
 
 
 if __name__ == "__main__":
