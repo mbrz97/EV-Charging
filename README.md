@@ -1,4 +1,4 @@
-# EV Charging Simulation Documentation
+# EV Charging Simulation
 
 ## Introduction
 EV charging in residential complexes involves navigating the challenges of limited charging infrastructure and the competition among residents for access. Typically, complexes provide shared charging stations that operate on a first-come, first-serve basis or through a reservation system to manage the high demand, especially during peak hours. The scarcity of chargers leads to the implementation of charging etiquette and smart charging solutions that distribute power efficiently, ensuring fair and effective use. As the number of EVs increases, residential complexes are exploring innovative strategies, such as app-based reservation systems and load management technologies, to expand and optimize their charging infrastructure, thereby aiming to meet the growing demand and maintain equal access for all residents.
@@ -10,14 +10,14 @@ This code represents a simulation of an electric vehicle (EV) charging environme
 ![Charts](/chart/figure.png "Example Charts")
 
 
-## Key Components
+## Components
 
 ### `BuildingEnvironment` (Model)
 
 #### Purpose
 Represents the main simulation model, integrating all components (EVs, chargers, and breakers) and managing their interactions.
 
-#### Key Attributes
+#### Attributes
 - `breaker_capacity`: A list containing the capacity (in amperes) for each breaker.
 - `num_agents`: The number of EVs in the simulation.
 - `schedule`: A Mesa `RandomActivation` scheduler to activate agents in a random order each step.
@@ -27,7 +27,7 @@ Represents the main simulation model, integrating all components (EVs, chargers,
 - `unavailable_charger_events`: A counter for tracking how often EVs cannot find an available charger.
 - `datacollector`: A Mesa `DataCollector` for gathering and storing simulation data.
 
-#### Key Methods
+#### Actions and Methods
 - `__init__`: Initializes the model, creating breakers, chargers, and EVs based on input parameters.
 - `step`: Advances the model by one step, collecting data and updating the state of all agents.
 - `register_unavailable_charger_event`: Increments the counter for unavailable charger events.
@@ -38,13 +38,13 @@ Represents the main simulation model, integrating all components (EVs, chargers,
 #### Purpose
 Represents an electric vehicle within the simulation, with its own battery capacity and charging needs.
 
-#### Key Attributes
+#### Attributes
 - `battery_capacity`: The total battery capacity of the EV.
 - `power_consumed`: The amount of power consumed by the EV.
 - `charging_status`: A boolean indicating whether the EV is currently charging.
 - `charge_level`: The current charge level of the EV's battery.
 
-#### Key Methods
+#### Actions and Methods
 - `__init__`: Initializes the EV with a specified battery capacity.
 - `step`: Defines the behavior of the EV in each simulation step, including daily use and starting or stopping charging.
 - `needs_charging`: Determines whether the EV needs to be charged.
@@ -57,14 +57,14 @@ Represents an electric vehicle within the simulation, with its own battery capac
 #### Purpose
 Represents an individual charger for electric vehicles.
 
-#### Key Attributes
+#### Attributes
 - `availability`: A boolean indicating whether the charger is currently available.
 - `connected_ev`: The `ElectricVehicle` agent (if any) currently connected to the charger.
 - `initial_charging_power`: The initial power output of the charger.
 - `current_charging_power`: The current power output of the charger, which can be adjusted.
 - `connected_breaker_index`: The index of the breaker to which the charger is connected.
 
-#### Key Methods
+#### Actions and Methods
 - `__init__`: Initializes the charger with a specified connected breaker and charging power.
 - `activate_charger`: Connects an EV to the charger and starts the charging process.
 - `adjust_charging_power`: Adjusts the charger's power output.
