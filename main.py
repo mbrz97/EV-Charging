@@ -101,15 +101,15 @@ class ElectricVehicle(Agent):
         # self.consumption_rate = 0.2  # kWh per km
         self.charging_status = False
 
-        mean = 100
-        std_dev = 40
-        value = np.random.normal(mean, std_dev)
-        while value < 0 or value > 100:
-            value = np.random.normal(mean, std_dev)
-        variable = round(value)
-
-        # Assuming efficiency of 5 km/kWh
-        self.daily_km = variable / 5
+        # mean = 100
+        # std_dev = 40
+        # value = np.random.normal(mean, std_dev)
+        # while value < 0 or value > 100:
+        #     value = np.random.normal(mean, std_dev)
+        # variable = round(value)
+        #
+        # # Assuming efficiency of 5 km/kWh
+        # self.daily_km = variable / 5
 
         self.charge_level = random.uniform(0.2,
                                            1.0) * battery_capacity  # Initial charge level as a percentage of capacity
@@ -139,14 +139,27 @@ class ElectricVehicle(Agent):
 
     def daily_use(self):
         # Simulate daily consumption based on kilometers driven and efficiency
-        consumption = self.daily_km
+
+        # mean = 60
+        # std_dev = 100
+        # value = np.random.normal(mean, std_dev)
+        # while value < 0 or value > mean:
+        #     value = np.random.normal(mean, std_dev)
+        # variable = round(value)
+
+        variable = random.uniform(0, 100)
+
+        # Assuming efficiency of 5 km/kWh
+        daily_km_rand = variable / 5
+
+        consumption = daily_km_rand
         self.charge_level -= consumption
         if self.charge_level < 0:
             self.charge_level = 0
 
     def needs_charging(self):
-        # Assume the vehicle needs charging if below 20% capacity
-        return self.charge_level < self.battery_capacity
+        # Assume the vehicle needs charging if below 80% capacity
+        return self.charge_level < 0.7*self.battery_capacity
 
     def find_available_charger(self):
         for charger in self.model.chargers:
