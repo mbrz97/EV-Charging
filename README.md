@@ -107,4 +107,4 @@ To run the simulation, ensure Mesa is installed in your Python environment, then
 
 ## Conclusion
 
-This code provides a comprehensive framework for simulating and visualizing the dynamics of EV charging in a controlled environment. It allows for the exploration of various configurations and their impact on power consumption, charger utilization, and the frequency of unavailable charging opportunities.
+This code provides a comprehensive framework for simulating and visualizing the dynamics of EV charging in a controlled environment. It allows for the exploration of various configurations and their impact on power consumption, charger utilization, and the frequency of unavailable charger events.
