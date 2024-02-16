@@ -102,7 +102,3 @@ Uses sliders and input fields to allow users to adjust the number of EV chargers
 ## Usage
 
 To run the simulation, ensure Mesa is installed in your Python environment, then execute the script. The simulation parameters can be adjusted through the web interface launched by Mesa's server.
-
-## Conclusion
-
-This code provides a comprehensive framework for simulating and visualizing the dynamics of EV charging in a controlled environment. It allows for the exploration of various configurations and their impact on power consumption, charger utilization, and the frequency of unavailable charger events.
