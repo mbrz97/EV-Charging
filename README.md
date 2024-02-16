@@ -4,6 +4,9 @@
 
 This code represents a simulation of an electric vehicle (EV) charging environment using the Mesa framework for Python. It models a building environment with a specified number of electric vehicle chargers, electric vehicles (EVs), and electrical breakers with varying capacities. The simulation's main objectives are to manage the charging process, allocate power efficiently among chargers, and track power consumption and charger availability.
 
+![Charts](/chart/figure.png "Example Charts")
+
+
 ## Key Components
 
 ### `BuildingEnvironment` (Model)
