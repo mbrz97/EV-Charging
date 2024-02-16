@@ -1,6 +1,9 @@
 # EV Charging Simulation Documentation
 
-## Overview
+## Introduction
+EV charging in residential complexes involves navigating the challenges of limited charging infrastructure and the competition among residents for access. Typically, complexes provide shared charging stations that operate on a first-come, first-serve basis or through a reservation system to manage the high demand, especially during peak hours. The scarcity of chargers leads to the implementation of charging etiquette and smart charging solutions that distribute power efficiently, ensuring fair and effective use. As the number of EVs increases, residential complexes are exploring innovative strategies, such as app-based reservation systems and load management technologies, to expand and optimize their charging infrastructure, thereby aiming to meet the growing demand and maintain equal access for all residents.
+
+To have a better understanding of how the dynamics of an EV Charging fleet system works, I've prepared this simulation which offers valuable insights for EV charging projects, especially in residential complexes facing the challenge of limited charging infrastructure and high demand. By modeling various scenarios, this tool aids property managers and community planners in decision-making by running simulation on how EV charger usage would look like in their property.
 
 This code represents a simulation of an electric vehicle (EV) charging environment using the Mesa framework for Python. It models a building environment with a specified number of electric vehicle chargers, electric vehicles (EVs), and electrical breakers with varying capacities. The simulation's main objectives are to manage the charging process, allocate power efficiently among chargers, and track power consumption and charger availability.
 
